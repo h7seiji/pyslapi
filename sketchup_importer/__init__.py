@@ -379,9 +379,9 @@ class SceneImporter():
 
             mapping = {}
             for i, (v, uv) in enumerate(zip(vs, uvs)):
-                lenght = len(seen)
+                length = len(seen)
                 mapping[i] = seen[v]
-                if len(seen) > lenght:
+                if len(seen) > length:
                     verts.append(v)
                 uvs.append(uv)
 
