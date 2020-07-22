@@ -132,8 +132,8 @@ class SceneImporter():
                 if s.name == options['import_scene']:
                     skp_log(f"Importing Scene '{s.name}'")
                     self.scene = s
-                    self.layers_skip = [l for l in s.layers]
-                    for l in s.layers:
+                    self.layers_skip = [layer for layer in s.layers]
+                    for layer in s.layers:
                         skp_log(f"SKIP: {l.name}")
             if not self.layers_skip:
                 skp_log('Could not find scene: {}, importing default.'
@@ -141,12 +141,12 @@ class SceneImporter():
 
         if not self.layers_skip:
             self.layers_skip = [
-                l for l in self.skp_model.layers if not l.visible
+                layer for layer in self.skp_model.layers if not layer.visible
             ]
 
         skp_log('Skipping Layers ... ')
 
-        for l in sorted([l.name for l in self.layers_skip]):
+        for layer in sorted([layer.name for layer in self.layers_skip]):
             skp_log(l)
 
         self.skp_components = proxy_dict(
@@ -220,22 +220,22 @@ class SceneImporter():
             for k, v in component_stats.items():
                 name, mat = k
                 depth = self.component_depth[name]
-                #print(k, len(v), depth)
+                # print(k, len(v), depth)
                 comp_def = self.skp_components[name]
                 if comp_def and depth == 1:
-                    #self.component_skip[(name,mat)] = comp_def.entities
+                    # self.component_skip[(name,mat)] = comp_def.entities
                     pass
                 elif comp_def and depth == i:
                     gname = group_name(name, mat)
                     if self.reuse_group and gname in bpy.data.groups:
-                        #print("Group {} already defined".format(gname))
+                        # print("Group {} already defined".format(gname))
                         self.component_skip[(name, mat)] = comp_def.entities
                         # grp_name = bpy.data.groups[gname]
                         self.group_written[(name,
                                             mat)] = bpy.data.groups[gname]
                     else:
                         group = bpy.data.groups.new(name=gname)
-                        #print("Component written as group".format(gname))
+                        # print("Component written as group".format(gname))
                         self.conponent_def_as_group(comp_def.entities,
                                                     name,
                                                     Matrix(),
@@ -311,7 +311,7 @@ class SceneImporter():
             else:
                 self.materials_scales[name] = (1.0, 1.0)
 
-            if self.reuse_material and not name in bpy.data.materials:
+            if self.reuse_material and name not in bpy.data.materials:
                 bmat = bpy.data.materials.new(name)
                 r, g, b, a = mat.color
                 tex = mat.texture
@@ -379,16 +379,16 @@ class SceneImporter():
 
             mapping = {}
             for i, (v, uv) in enumerate(zip(vs, uvs)):
-                l = len(seen)
+                lenght = len(seen)
                 mapping[i] = seen[v]
-                if len(seen) > l:
+                if len(seen) > lenght:
                     verts.append(v)
                 uvs.append(uv)
 
             smooth_edge = False
 
             for edge in f.edges:
-                if edge.GetSmooth() == True:
+                if edge.GetSmooth() is True:
                     smooth_edge = True
                     break
 
@@ -469,17 +469,17 @@ class SceneImporter():
         me.polygons.foreach_set("use_smooth", smooth)
 
         if uvs_used:
-            k, l = 0, 0
+            k, m = 0, 0
             me.uv_layers.new()
             for i in range(len(tri_faces)):
                 for j in range(3):
-                    uv_cordinates = (uv_list[i][l], uv_list[i][l + 1])
+                    uv_cordinates = (uv_list[i][m], uv_list[i][m + 1])
                     me.uv_layers[0].data[k].uv = Vector(uv_cordinates)
                     k += 1
                     if j != 2:
-                        l += 2
+                        m += 2
                     else:
-                        l = 0
+                        m = 0
 
         me.update(calc_edges=True)
         me.validate()
@@ -722,8 +722,8 @@ class SceneImporter():
             dob = bpy.data.objects.new("DUPLI_" + name, dme)
             dob.dupli_type = 'FACES'
             dob.location = main_loc
-            #dob.use_dupli_faces_scale = True
-            #dob.dupli_faces_scale = 10
+            # dob.use_dupli_faces_scale = True
+            # dob.dupli_faces_scale = 10
 
             ob = self.instance_object_or_group(name, default_material)
             ob.scale = real_scale
@@ -757,10 +757,10 @@ class SceneImporter():
         cam = ob.data
         aspect_ratio = camera.aspect_ratio
         fov = camera.fov
-        if aspect_ratio == False:
+        if aspect_ratio is False:
             # skp_log(f"Camera:'{name}' uses dynamic/screen aspect ratio.")
             aspect_ratio = self.aspect_ratio
-        if fov == False:
+        if fov is False:
             skp_log(f"Camera:'{name}'' is in Orthographic Mode.")
             cam.type = 'ORTHO'
         else:
